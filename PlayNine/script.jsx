@@ -74,6 +74,7 @@ var ButtonFrame = React.createClass({
         );
         break;
       default:
+        //sets up button in normal state
         disabled = (this.props.selectedNumbers.length === 0);
         button = (
           <button className="btn btn-primary btn-lg" disabled={disabled}
@@ -87,6 +88,8 @@ var ButtonFrame = React.createClass({
       <div id="button-frame">
         {button}
         <br /><br />
+
+        //REDRAW button
         <button className="btn btn-warning btn-xs" onClick={this.props.redraw}
                 disabled={this.props.redraws === 0}>
           <span className="glyphicon glyphicon-refresh"></span>
@@ -104,7 +107,10 @@ var ButtonFrame = React.createClass({
 
 var AnswerFrame = React.createClass({
   render: function() {
+    //gets props(properties from getInitialState)
     var props = this.props;
+
+    //create new array of selected numbers, when called in GAME FRAME
     var selectedNumbers = props.selectedNumbers.map(function(i) {
       return (
         <span onClick={props.unselectNumber.bind(null, i)}>
@@ -133,6 +139,7 @@ var NumbersFrame = React.createClass({
         usedNumbers = this.props.usedNumbers,
         selectedNumbers = this.props.selectedNumbers;
 
+    //outputs 9 numbers to choose in FRAME, sets up with classes & and onClicks
     for (var i=1; i <= 9; i++) {
       className = "number selected-" + (selectedNumbers.indexOf(i)>=0);
       className += " used-" + (usedNumbers.indexOf(i)>=0);
@@ -153,7 +160,7 @@ var NumbersFrame = React.createClass({
 });
 
 // +++++++++++++++++++++++++++++++++
-//DONE FRAME
+//DONE FRAME - calls when finished - insert message
 // +++++++++++++++++++++++++++++++++
 var DoneFrame = React.createClass({
   render: function() {
@@ -173,6 +180,7 @@ var DoneFrame = React.createClass({
 //GAME FRAME - holds all frames
 // +++++++++++++++++++++++++++++++++
 var Game = React.createClass({
+  //sets initial state with Variables GAME FRAME will use
   getInitialState: function() {
     return { numberOfStars: this.randomNumber(),
              selectedNumbers: [],
@@ -181,13 +189,17 @@ var Game = React.createClass({
              correct: null,
              doneStatus: null };
   },
+  //reset the to above
   resetGame: function() {
     this.replaceState(this.getInitialState());
   },
+  //sets random number for stars
   randomNumber: function() {
     return Math.floor(Math.random()*9) + 1
   },
+  // select number
   selectNumber: function(clickedNumber) {
+
     if (this.state.selectedNumbers.indexOf(clickedNumber) < 0) {
       this.setState(
         { selectedNumbers: this.state.selectedNumbers.concat(clickedNumber),
@@ -203,15 +215,18 @@ var Game = React.createClass({
 
     this.setState({ selectedNumbers: selectedNumbers, correct: null });
   },
+  //return sum of stars
   sumOfSelectedNumbers: function() {
     return this.state.selectedNumbers.reduce(function(p,n) {
       return p+n;
     }, 0)
   },
+  //checks for answer
   checkAnswer: function() {
     var correct = (this.state.numberOfStars === this.sumOfSelectedNumbers());
     this.setState({ correct: correct });
   },
+  //accepts and resets
   acceptAnswer: function() {
     var usedNumbers = this.state.usedNumbers.concat(this.state.selectedNumbers);
     this.setState({
@@ -223,6 +238,7 @@ var Game = React.createClass({
       this.updateDoneStatus();
     });
   },
+  //
   redraw: function() {
     if (this.state.redraws > 0) {
       this.setState({
@@ -235,6 +251,7 @@ var Game = React.createClass({
       });
     }
   },
+  //checks possible solutions
   possibleSolution: function() {
     var numberOfStars = this.state.numberOfStars,
         possibleNumbers = [],
